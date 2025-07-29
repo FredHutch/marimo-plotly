@@ -32,6 +32,7 @@ async def _(micropip, mo, running_in_wasm):
         if running_in_wasm:
             print("Installing via micropip")
             # Downgrade plotly to avoid the use of narwhals
+            micropip.uninstall("plotly")
             await micropip.install("plotly<6.0.0")
             await micropip.install("openpyxl")
         import pandas as pd
