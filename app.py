@@ -69,15 +69,25 @@ def _(mo, pd, table):
 
 
 @app.cell
-def _(df, mo):
+def _(df, mo, px):
     kws = ['x', 'y', 'z', 'color']
-    args = mo.md("\n".join(["- {" + kw + "}" for kw in kws])).batch(
+    args = mo.md(
+        "\n".join(["- {" + kw + "}" for kw in kws])
+        + "\n - {color_continuous_scale}"
+    ).batch(
         **{
             kw: mo.ui.dropdown(
                 label=kw,
                 options=df.columns.values
             )
             for kw in kws
+        },
+        **{
+            "color_continuous_scale": mo.ui.dropdown(
+                label="Color Scale:",
+                options=px.colors.named_colorscales(),
+                value="bluered"
+            )
         }
     )
     args
