@@ -12,8 +12,30 @@ def _():
 
 @app.cell
 def _():
-    import pandas as pd
-    import plotly.express as px
+    # If the script is running in WASM (instead of local development mode), load micropip
+    import sys
+    if "pyodide" in sys.modules:
+        import micropip
+        running_in_wasm = True
+    else:
+        micropip = None
+        running_in_wasm = False
+    return micropip, running_in_wasm
+
+
+@app.cell
+async def _(micropip, mo, running_in_wasm):
+    with mo.status.spinner("Loading dependencies"):
+        # If we are running in WASM, some dependencies need to be set up appropriately.
+        # This is really just aligning the needs of the app with the default library versions
+        # that come when a marimo app loads in WASM.
+        if running_in_wasm:
+            print("Installing via micropip")
+            # Downgrade plotly to avoid the use of narwhals
+            await micropip.install("plotly<6.0.0")
+            await micropip.install("openpyxl")
+        import pandas as pd
+        import plotly.express as px
     return pd, px
 
 
